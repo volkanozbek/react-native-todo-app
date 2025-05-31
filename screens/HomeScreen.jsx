@@ -72,6 +72,9 @@ export default function HomeScreen() {
               value={input}
               onChangeText={setInput}
               style={styles.input}
+              autoFocus
+              onSubmitEditing={handleAdd}
+              returnKeyType="done"
             />
             <View style={styles.modalButtons}>
               <Button
@@ -101,12 +104,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
   },
   text: {
     fontSize: 18,
