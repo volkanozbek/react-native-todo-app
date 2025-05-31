@@ -17,17 +17,18 @@ import { TodoContext } from '../context/TodoContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const { todos, addTodo, removeTodo } = useContext(TodoContext);
+  const { todos, addTodo, removeTodo, toggleComplete } =
+    useContext(TodoContext);
   const [input, setInput] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleAdd = () => {
     if (!input.trim()) {
-      Alert.alert('Hata', 'Lütfen geçerli bir todo girin!');
+      Alert.alert('Error', 'Please enter a task!');
       return;
     }
     addTodo(input);
-    Alert.alert('Bilgi', `"${input}" adlı todo eklendi!`);
+    Alert.alert('Success', 'Task added successfully!');
     setInput('');
     setModalVisible(false);
   };
@@ -54,6 +55,7 @@ export default function HomeScreen() {
           <TodoItem
             item={item}
             onDelete={removeTodo}
+            onToggleComplete={toggleComplete}
           />
         )}
         ListEmptyComponent={<Text style={styles.text}>No task yet!</Text>}
@@ -63,27 +65,41 @@ export default function HomeScreen() {
       <Modal
         visible={modalVisible}
         animationType="slide"
-        transparent={true}
+        transparent
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            {/* Close Icon */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Add Task</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Ionicons
+                  name="close"
+                  size={24}
+                  color="#FF0B55"
+                  style={styles.closeIcon}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Input */}
             <TextInput
               placeholder="Add new task..."
               value={input}
               onChangeText={setInput}
               style={styles.input}
+              autoFocus
+              onSubmitEditing={handleAdd}
+              returnKeyType="done"
             />
-            <View style={styles.modalButtons}>
-              <Button
-                title="Close"
-                onPress={() => setModalVisible(false)}
-                color="#FF3B30"
-              />
-              <Button
-                title="Add Task"
-                onPress={handleAdd}
-              />
-            </View>
+
+            {/* Add Button */}
+            <TouchableOpacity
+              style={styles.addTaskButton}
+              onPress={handleAdd}
+            >
+              <Text style={styles.buttonText}>Add Task</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -92,6 +108,16 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -121,17 +147,39 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 12,
+    position: 'relative',
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: -45,
+    right: -30,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 6,
+    elevation: 4,
+    shadowColor: '#FF0B55',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 12,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 15,
+    backgroundColor: '#f9f9f9',
   },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  addTaskButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });
